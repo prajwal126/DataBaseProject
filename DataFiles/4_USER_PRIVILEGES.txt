@@ -1,0 +1,8 @@
+1,'CREATETAB','Admin',1,0
+2,'INSERT','Admin',1,0
+3,'DELETE','Admin',0,1
+4,'SELECT','Admin',1,0
+5,'UPDATE','Admin',0,1
+6,'SELECT','Developer',1,0
+7,'INSERT','Developer',1,0
+8,'SELECT','Casual-user',1,0

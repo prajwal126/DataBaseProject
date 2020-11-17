@@ -1,0 +1,3 @@
+'Admin','The database administrator'
+'Developer','Back-end developer'
+'Casual-user','Occasional user of db'
