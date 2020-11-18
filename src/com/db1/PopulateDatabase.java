@@ -27,13 +27,14 @@ public class PopulateDatabase {
 			System.out.println("Connection successfull...");
 			stmt = conn.createStatement();
 
-			System.out.println(
-					"1. Load and Display Data \n2.Insert Data \n3.Retrieve all privileges associate with a particular ROLE and with a particular USER_ACCOUNT \n4.Check account privilege \n5.Exit");
+			while (true) {
+				System.out.println("1. Load and Display Data \n" + "2.Insert Data \n"
+						+ "3.Retrieve all privileges associate with a particular ROLE\n"
+						+ "4.Retrieve all privileges associate with a particular User \n"
+						+ "5.Check if a User has a particular privilege");
 
-			Scanner input = new Scanner(System.in);
-			int selection = input.nextInt();
-
-			while (selection < 5) {
+				Scanner input = new Scanner(System.in);
+				int selection = input.nextInt();
 				switch (selection) {
 				case 1:
 					System.out.println("Load and Display Data");
@@ -260,20 +261,58 @@ public class PopulateDatabase {
 					}
 
 				case 3:
-					System.out.println(
-							"Retrieve all privileges associate with a particular ROLE and with a particular USER_ACCOUNT");
+					System.out.println("Enter the ROLE name");
+					Scanner scanner = new Scanner(System.in);
+					String roleName = scanner.next();
+					scanner.nextLine();
+
+					ResultSet privName = stmt.executeQuery(
+							"select privilege_name from user_privileges where role_name ='" + roleName + "'");
+					System.out.println("Privileges for the role " + roleName + " are:");
+					while (privName.next()) {
+						System.out.println(privName.getString("privilege_name"));
+					}
 					break;
 
 				case 4:
-					System.out.println(
-							"Retrieve all privileges associate with a particular ROLE and with a particular USER_ACCOUNT");
+					System.out.println("Enter the User name");
+					Scanner userScanner = new Scanner(System.in);
+					String userName1 = userScanner.next();
+					userScanner.nextLine();
+
+					ResultSet privName1 = stmt.executeQuery(
+							"select  privilege_name from user_account ua, user_privileges up where ua.name = '"
+									+ userName1 + "' and ua.role_name = up.role_name");
+					while (privName1.next()) {
+						System.out.println(privName1.getString("privilege_name"));
+					}
 					break;
 
+				case 5:
+
+					Scanner userPrivScanne = new Scanner(System.in);
+					System.out.println("Enter the User name");
+					String userName2 = userPrivScanne.next();
+					userPrivScanne.nextLine();
+					System.out.println("Enter the Priv name");
+					String privName2 = userPrivScanne.next();
+					userPrivScanne.nextLine();
+					ResultSet hasPriv = stmt.executeQuery(
+							"select  * from user_account ua, user_privileges up where ua.name = '" + userName2
+									+ "' and ua.role_name = up.role_name and up.privilege_name  = '" + privName2 + "'");
+
+					if (hasPriv.isBeforeFirst()) {
+						System.out.println("User has " + privName2 + " privilges");
+					} else {
+						System.out.println("User has NO " + privName2 + " the privilges");
+					}
+
+					break;
+				case 6:
+					System.out.println("Good Bye");
+					System.exit(0);
 				}
-				System.out.println();
-				System.out.println(
-						"1. Load and Display Data \n2.Insert Data \n3.Retrieve all privileges associate with a particular ROLE and with a particular USER_ACCOUNT \n4.Check account privilege \n5.Exit");
-				selection = input.nextInt(); // add this
+
 			}
 
 		} catch (SQLException se) {
