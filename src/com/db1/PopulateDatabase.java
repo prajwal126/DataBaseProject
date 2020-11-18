@@ -259,7 +259,7 @@ public class PopulateDatabase {
 					System.out.println("Enter the User name");
 					String userName2 = scanner.next();
 					scanner.nextLine();
-					System.out.println("Enter the Priv name");
+					System.out.println("Enter the Privilege name");
 					String privName2 = scanner.next();
 					scanner.nextLine();
 					ResultSet hasPriv = stmt.executeQuery(
@@ -271,8 +271,8 @@ public class PopulateDatabase {
 					} else {
 						System.out.println("User has NO " + privName2 + " privilges");
 					}
-
 					break;
+
 				case 6:
 					System.out.println();
 					ResultSet rs = stmt.executeQuery("SELECT * FROM USER_ROLE order by 1 asc");
@@ -338,7 +338,6 @@ public class PopulateDatabase {
 					System.out.println("Good Bye");
 					System.exit(0);
 				}
-
 			}
 
 		} catch (SQLException se) {
