@@ -34,8 +34,9 @@ public class PopulateDatabase {
 						+ "5.Check if a User has a particular privilege \n" + "6. Display All table values\n"
 						+ "7. Exit");
 
-				Scanner input = new Scanner(System.in);
-				int selection = input.nextInt();
+				Scanner scanner = new Scanner(System.in);
+				int selection = scanner.nextInt();
+				scanner.nextLine();
 				switch (selection) {
 				case 1:
 					System.out.println("Load and Display Data");
@@ -111,7 +112,6 @@ public class PopulateDatabase {
 							privilageRoleTable = "";
 					while (true) {
 						System.out.println("Please choose the operation you would like to perform");
-						Scanner scanner = new Scanner(System.in);
 						System.out.println("1. Enter all the information about a new USER_ACCOUNT.");
 						System.out.println("2. Enter all the information about a new ROLE.");
 						System.out.println(
@@ -183,6 +183,7 @@ public class PopulateDatabase {
 							privilegeRole = scanner.next();
 							scanner.nextLine();
 							break;
+							
 						case 7:
 							System.out.println(
 									"Enter the privilage name, role and table name to associalte together. Comma separated values.");
@@ -220,7 +221,6 @@ public class PopulateDatabase {
 							stmt.addBatch(prv);
 							stmt.addBatch(acc);
 							stmt.executeBatch();
-
 							break;
 
 						default:
@@ -231,7 +231,6 @@ public class PopulateDatabase {
 
 				case 3:
 					System.out.println("Enter the ROLE name");
-					Scanner scanner = new Scanner(System.in);
 					String roleName = scanner.next();
 					scanner.nextLine();
 
@@ -245,9 +244,8 @@ public class PopulateDatabase {
 
 				case 4:
 					System.out.println("Enter the User name");
-					Scanner userScanner = new Scanner(System.in);
-					String userName1 = userScanner.next();
-					userScanner.nextLine();
+					String userName1 = scanner.next();
+					scanner.nextLine();
 
 					ResultSet privName1 = stmt.executeQuery(
 							"select  privilege_name from user_account ua, user_privileges up where ua.name = '"
@@ -258,14 +256,12 @@ public class PopulateDatabase {
 					break;
 
 				case 5:
-
-					Scanner userPrivScanne = new Scanner(System.in);
 					System.out.println("Enter the User name");
-					String userName2 = userPrivScanne.next();
-					userPrivScanne.nextLine();
+					String userName2 = scanner.next();
+					scanner.nextLine();
 					System.out.println("Enter the Priv name");
-					String privName2 = userPrivScanne.next();
-					userPrivScanne.nextLine();
+					String privName2 = scanner.next();
+					scanner.nextLine();
 					ResultSet hasPriv = stmt.executeQuery(
 							"select  * from user_account ua, user_privileges up where ua.name = '" + userName2
 									+ "' and ua.role_name = up.role_name and up.privilege_name  = '" + privName2 + "'");
@@ -279,7 +275,7 @@ public class PopulateDatabase {
 					break;
 				case 6:
 					System.out.println();
-					ResultSet rs = stmt.executeQuery("SELECT * FROM USER_ROLE");
+					ResultSet rs = stmt.executeQuery("SELECT * FROM USER_ROLE order by 1 asc");
 					System.out.println("USER_ROLE TABLE: ");
 					System.out.println("ROLE_NAME  |  DESCRIPTION");
 
@@ -289,7 +285,7 @@ public class PopulateDatabase {
 						System.out.println(name + "  |  " + desc);
 					}
 					System.out.println("--------------------------------------------------------");
-					ResultSet rs2 = stmt.executeQuery("SELECT * FROM USER_ACCOUNT");
+					ResultSet rs2 = stmt.executeQuery("SELECT * FROM USER_ACCOUNT  order by 1 asc");
 					System.out.println("USER_ACCOUNT TABLE: ");
 					System.out.println("IDNO  |  ROLE_NAME  |  NAME  |  PHONE");
 
@@ -301,7 +297,7 @@ public class PopulateDatabase {
 						System.out.println(idno + "  |  " + role + "  |  " + name + "  |  " + phone);
 					}
 					System.out.println("--------------------------------------------------------");
-					ResultSet rs3 = stmt.executeQuery("SELECT * FROM USER_TABLES");
+					ResultSet rs3 = stmt.executeQuery("SELECT * FROM USER_TABLES  order by 1 asc");
 					System.out.println("USER_TABLES TABLE: ");
 					System.out.println("Table_Name  |  IDNO");
 
@@ -311,7 +307,7 @@ public class PopulateDatabase {
 						System.out.println(name + "  |  " + id);
 					}
 					System.out.println("--------------------------------------------------------");
-					ResultSet rs4 = stmt.executeQuery("SELECT * FROM USER_PRIVILEGES");
+					ResultSet rs4 = stmt.executeQuery("SELECT * FROM USER_PRIVILEGES  order by 1 asc");
 					System.out.println("USER_PRIVILEGES TABLE: ");
 					System.out.println(
 							"PRIVILEGE_ID  |  PRIVILEGE_NAME  |  ROLE_NAME  |  IS_ACC_PRIVLEGE  |  IS_RELATIONSHIP_PRIVILEGE");
@@ -325,7 +321,7 @@ public class PopulateDatabase {
 						System.out.println(id + "  |  " + role + "  |  " + name + "  |  " + acc + "  |  " + rel);
 					}
 					System.out.println("--------------------------------------------------------");
-					ResultSet rs5 = stmt.executeQuery("SELECT * FROM USER_ACCESS");
+					ResultSet rs5 = stmt.executeQuery("SELECT * FROM USER_ACCESS  order by 1 asc");
 					System.out.println("USER_ACCESS TABLE: ");
 					System.out.println("ID  |  PRIVILEGE_ID  |  ROLE_NAME  |  TABLE_NAME");
 
@@ -336,6 +332,7 @@ public class PopulateDatabase {
 						String tbl = rs5.getString("TABLE_NAME");
 						System.out.println(id + "  |  " + prv + "  |  " + role + "  |  " + tbl);
 					}
+					System.out.println("--------------------------------------------------------");
 					break;
 				case 7:
 					System.out.println("Good Bye");
