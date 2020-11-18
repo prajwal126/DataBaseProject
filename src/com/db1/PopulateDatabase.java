@@ -28,7 +28,7 @@ public class PopulateDatabase {
 			stmt = conn.createStatement();
 
 			while (true) {
-				System.out.println("1. Load and Display Data \n" + "2.Insert Data \n"
+				System.out.println("1. Load Data \n" + "2.Insert Data \n"
 						+ "3.Retrieve all privileges associate with a particular ROLE\n"
 						+ "4.Retrieve all privileges associate with a particular User \n"
 						+ "5.Check if a User has a particular privilege \n" + "6. Display All table values\n"
@@ -102,7 +102,6 @@ public class PopulateDatabase {
 
 						}
 					}
-					// Question 2
 					break;
 
 				case 2:
@@ -183,7 +182,7 @@ public class PopulateDatabase {
 							privilegeRole = scanner.next();
 							scanner.nextLine();
 							break;
-							
+
 						case 7:
 							System.out.println(
 									"Enter the privilage name, role and table name to associalte together. Comma separated values.");
@@ -228,7 +227,7 @@ public class PopulateDatabase {
 						}
 
 					}
-
+					break;
 				case 3:
 					System.out.println("Enter the ROLE name");
 					String roleName = scanner.next();
@@ -250,6 +249,7 @@ public class PopulateDatabase {
 					ResultSet privName1 = stmt.executeQuery(
 							"select  privilege_name from user_account ua, user_privileges up where ua.name = '"
 									+ userName1 + "' and ua.role_name = up.role_name");
+					System.out.println("Privileges for the Username " + userName1 + " are:");
 					while (privName1.next()) {
 						System.out.println(privName1.getString("privilege_name"));
 					}
@@ -269,7 +269,7 @@ public class PopulateDatabase {
 					if (hasPriv.isBeforeFirst()) {
 						System.out.println("User has " + privName2 + " privilges");
 					} else {
-						System.out.println("User has NO " + privName2 + " the privilges");
+						System.out.println("User has NO " + privName2 + " privilges");
 					}
 
 					break;
