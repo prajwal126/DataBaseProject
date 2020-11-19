@@ -336,6 +336,7 @@ public class PopulateDatabase {
 					break;
 				case 7:
 					System.out.println("Good Bye");
+					scanner.close();
 					System.exit(0);
 				}
 			}
