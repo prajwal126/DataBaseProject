@@ -105,10 +105,10 @@ public class PopulateDatabase {
 					break;
 
 				case 2:
-					int idNo = 0, isAccountPriv = 0, isRelationshipPriv = 0;
+					int idNo = 0, phoneNumber = 0, isAccountPriv = 0, isRelationshipPriv = 0;
 					String userName = "", newRoleName = "", roleDescription = "", tableName = "", tableOwner = "",
 							privilegeName = "", privilegeType = "", userAccountRole = "", privilegeRole = "",
-							privilageRoleTable = "", phoneNumber="";
+							privilageRoleTable = "";
 					while (true) {
 						System.out.println("Please choose the operation you would like to perform");
 						System.out.println("1. Enter all the information about a new USER_ACCOUNT.");
@@ -135,7 +135,7 @@ public class PopulateDatabase {
 							idNo = scanner.nextInt();
 							scanner.nextLine();
 							System.out.println("Enter user Phone Number");
-							phoneNumber = scanner.next();
+							phoneNumber = scanner.nextInt();
 							scanner.nextLine();
 							break;
 
@@ -145,6 +145,9 @@ public class PopulateDatabase {
 							scanner.nextLine();
 							System.out.println("Enter Role Description");
 							roleDescription = scanner.nextLine();
+							String role = "INSERT INTO USER_ROLE VALUES ('" + newRoleName + "','" + roleDescription
+									+ "')";
+							stmt.executeUpdate(role);
 							break;
 
 						case 3:
@@ -154,6 +157,8 @@ public class PopulateDatabase {
 							System.out.println("Enter Owner ID");
 							tableOwner = scanner.next();
 							scanner.nextLine();
+							String tbl = "INSERT INTO USER_TABLES VALUES ('" + tableName + "'," + tableOwner + ")";
+							stmt.executeUpdate(tbl);
 							break;
 
 						case 4:
@@ -175,12 +180,24 @@ public class PopulateDatabase {
 							System.out.println("Enter the Role Name for user with user id : " + idNo);
 							userAccountRole = scanner.next();
 							scanner.nextLine();
+
+							String usr = "INSERT INTO USER_ACCOUNT VALUES (" + idNo + ",'" + userAccountRole + "','"
+									+ userName + "'," + phoneNumber + ")";
+							stmt.executeUpdate(usr);
 							break;
 
 						case 6:
 							System.out.println("Enter the account privilege for role : " + newRoleName);
 							privilegeRole = scanner.next();
 							scanner.nextLine();
+							ResultSet privRs = stmt.executeQuery("SELECT count(*) as counts FROM USER_PRIVILEGES");
+							int privId = 0;
+							while (privRs.next()) {
+								privId = privRs.getInt("counts") + 1;
+							}
+							String prv = "INSERT INTO USER_PRIVILEGES VALUES (" + privId + ",'" + privilegeRole + "','"
+									+ newRoleName + "'," + isAccountPriv + "," + isRelationshipPriv + ")";
+							stmt.executeUpdate(prv);
 							break;
 
 						case 7:
@@ -189,11 +206,6 @@ public class PopulateDatabase {
 							privilageRoleTable = scanner.next();
 							scanner.nextLine();
 							String[] userACcessRole = privilageRoleTable.split(",");
-							ResultSet privRs = stmt.executeQuery("SELECT count(*) as counts FROM USER_PRIVILEGES");
-							int privId = 0;
-							while (privRs.next()) {
-								privId = privRs.getInt("counts") + 1;
-							}
 
 							ResultSet userAccessRs = stmt.executeQuery("SELECT count(*) as counts FROM USER_ACCESS");
 							int userAccessId = 0;
@@ -201,25 +213,19 @@ public class PopulateDatabase {
 								userAccessId = userAccessRs.getInt("counts") + 1;
 							}
 
-							String usr = "INSERT INTO USER_ACCOUNT VALUES (" + idNo + ",'" + newRoleName + "','"
-									+ userName + "'," + phoneNumber + ")";
+							String privName = userACcessRole[0];
+							ResultSet userprivNameRs = stmt
+									.executeQuery("SELECT privilege_id FROM USER_PRIVILEGES where privilege_name ='"
+											+ privName + "'");
+							int privId1 = 0;
+							while (userprivNameRs.next()) {
+								privId1 = userprivNameRs.getInt("privilege_id");
+							}
 
-							String role = "INSERT INTO USER_ROLE VALUES ('" + newRoleName + "','" + roleDescription
-									+ "')";
-							String tbl = "INSERT INTO USER_TABLES VALUES ('" + tableName + "'," + tableOwner + ")";
-
-							String prv = "INSERT INTO USER_PRIVILEGES VALUES (" + privId + ",'" + privilegeName + "','"
-									+ newRoleName + "'," + isAccountPriv + "," + isRelationshipPriv + ")";
-
-							String acc = "INSERT INTO USER_ACCESS VALUES (" + userAccessId + ",'" + privId + "','"
+							String acc = "INSERT INTO USER_ACCESS VALUES (" + userAccessId + ",'" + privId1 + "','"
 									+ userACcessRole[1] + "','" + userACcessRole[2] + "')";
-
-							stmt.addBatch(role);
-							stmt.addBatch(usr);
-							stmt.addBatch(tbl);
-							stmt.addBatch(prv);
-							stmt.addBatch(acc);
-							stmt.executeBatch();
+							System.out.println(acc);
+							stmt.executeUpdate(acc);
 							break;
 
 						default:
