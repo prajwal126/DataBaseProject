@@ -105,10 +105,10 @@ public class PopulateDatabase {
 					break;
 
 				case 2:
-					int idNo = 0, phoneNumber = 0, isAccountPriv = 0, isRelationshipPriv = 0;
+					int idNo = 0, isAccountPriv = 0, isRelationshipPriv = 0;
 					String userName = "", newRoleName = "", roleDescription = "", tableName = "", tableOwner = "",
 							privilegeName = "", privilegeType = "", userAccountRole = "", privilegeRole = "",
-							privilageRoleTable = "";
+							privilageRoleTable = "",phoneNumber = "";
 					while (true) {
 						System.out.println("Please choose the operation you would like to perform");
 						System.out.println("1. Enter all the information about a new USER_ACCOUNT.");
@@ -135,7 +135,7 @@ public class PopulateDatabase {
 							idNo = scanner.nextInt();
 							scanner.nextLine();
 							System.out.println("Enter user Phone Number");
-							phoneNumber = scanner.nextInt();
+							phoneNumber = scanner.next();
 							scanner.nextLine();
 							break;
 
