@@ -108,128 +108,171 @@ public class PopulateDatabase {
 					int idNo = 0, isAccountPriv = 0, isRelationshipPriv = 0;
 					String userName = "", newRoleName = "", roleDescription = "", tableName = "", tableOwner = "",
 							privilegeName = "", privilegeType = "", userAccountRole = "", privilegeRole = "",
-							privilageRoleTable = "",phoneNumber = "";
+							privilageRoleTable = "", phoneNumber = "";
 					while (true) {
 						System.out.println("Please choose the operation you would like to perform");
 						System.out.println("1. Enter all the information about a new USER_ACCOUNT.");
 						System.out.println("2. Enter all the information about a new ROLE.");
+						System.out.println("3. Relate a USER_ACCOUNT to a ROLE.");
 						System.out.println(
-								"3. Enter all the information about a new TABLE. This should include specifying the owner user account of the table.");
-						System.out.println("4. Enter new PRIVILEGE, including the privilege type.");
-						System.out.println("5. Relate a USER_ACCOUNT to a ROLE.");
+								"4. Enter all the information about a new TABLE. This should include specifying the owner user account of the table.");
+						System.out.println("5. Enter new PRIVILEGE, including the privilege type.");
 						System.out.println("6. Relate an ACCOUNT_PRIVILEGE to a ROLE.");
 						System.out.println("7. Relate a RELATION_PRIVILEGE, ROLE, and TABLE.");
-						System.out.println("8. Back to previous menu.");
+						System.out.println("8. Update Current user Role");
+						System.out.println("8. Add New Privileges to a Role");
+						System.out.println("9. Back to previous menu.");
 						int option = scanner.nextInt();
 						scanner.nextLine();
-						if (option == 8) {
+						if (option == 10) {
 							break;
 						}
-						switch (option) {
+						try {
+							switch (option) {
 
-						case 1:
-							System.out.println("Enter user Name");
-							userName = scanner.next();
-							scanner.nextLine();
-							System.out.println("Enter user ID");
-							idNo = scanner.nextInt();
-							scanner.nextLine();
-							System.out.println("Enter user Phone Number");
-							phoneNumber = scanner.next();
-							scanner.nextLine();
-							break;
+							case 1:
+								System.out.println("Enter user Name");
+								userName = scanner.next();
+								scanner.nextLine();
+								System.out.println("Enter user ID");
+								idNo = scanner.nextInt();
+								scanner.nextLine();
+								System.out.println("Enter user Phone Number");
+								phoneNumber = scanner.next();
+								scanner.nextLine();
+								break;
 
-						case 2:
-							System.out.println("Enter Role Name");
-							newRoleName = scanner.next();
-							scanner.nextLine();
-							System.out.println("Enter Role Description");
-							roleDescription = scanner.nextLine();
-							String role = "INSERT INTO USER_ROLE VALUES ('" + newRoleName + "','" + roleDescription
-									+ "')";
-							stmt.executeUpdate(role);
-							break;
+							case 2:
+								System.out.println("Enter Role Name");
+								newRoleName = scanner.next();
+								scanner.nextLine();
+								System.out.println("Enter Role Description");
+								roleDescription = scanner.nextLine();
+								String role = "INSERT INTO USER_ROLE VALUES ('" + newRoleName + "','" + roleDescription
+										+ "')";
+								stmt.executeUpdate(role);
+								break;
 
-						case 3:
-							System.out.println("Enter Table Name");
-							tableName = scanner.next();
-							scanner.nextLine();
-							System.out.println("Enter Owner ID");
-							tableOwner = scanner.next();
-							scanner.nextLine();
-							String tbl = "INSERT INTO USER_TABLES VALUES ('" + tableName + "'," + tableOwner + ")";
-							stmt.executeUpdate(tbl);
-							break;
+							case 3:
+								System.out.println("Enter the Role Name for user with user id : " + idNo);
+								userAccountRole = scanner.next();
+								scanner.nextLine();
 
-						case 4:
-							System.out.println("Enter Privilege Name");
-							privilegeName = scanner.next();
-							scanner.nextLine();
-							System.out.println(
-									"Enter privilege type. A for account previlege or R for relationship privilege");
-							privilegeType = scanner.next();
-							scanner.nextLine();
-							if (privilegeType.equalsIgnoreCase("A")) {
-								isAccountPriv = 1;
-							} else {
-								isRelationshipPriv = 1;
+								String usr = "INSERT INTO USER_ACCOUNT VALUES (" + idNo + ",'" + userAccountRole + "','"
+										+ userName + "'," + phoneNumber + ")";
+								stmt.executeUpdate(usr);
+								break;
+
+							case 4:
+								System.out.println("Enter Table Name");
+								tableName = scanner.next();
+								scanner.nextLine();
+								System.out.println("Enter Owner ID");
+								tableOwner = scanner.next();
+								scanner.nextLine();
+								String tbl = "INSERT INTO USER_TABLES VALUES ('" + tableName + "'," + tableOwner + ")";
+								stmt.executeUpdate(tbl);
+								break;
+
+							case 5:
+								System.out.println("Enter Privilege Name");
+								privilegeName = scanner.next();
+								scanner.nextLine();
+								System.out.println(
+										"Enter privilege type. A for account previlege or R for relationship privilege");
+								privilegeType = scanner.next();
+								scanner.nextLine();
+								if (privilegeType.equalsIgnoreCase("A")) {
+									isAccountPriv = 1;
+								} else {
+									isRelationshipPriv = 1;
+								}
+								break;
+							case 6:
+								System.out.println("Enter the account privilege for role : " + privilegeName);
+								privilegeRole = scanner.next();
+								scanner.nextLine();
+								ResultSet privRs = stmt.executeQuery("SELECT count(*) as counts FROM USER_PRIVILEGES");
+								int privId = 0;
+								while (privRs.next()) {
+									privId = privRs.getInt("counts") + 1;
+								}
+								String prv = "INSERT INTO USER_PRIVILEGES VALUES (" + privId + ",'" + privilegeName
+										+ "','" + privilegeRole + "'," + isAccountPriv + "," + isRelationshipPriv + ")";
+								stmt.executeUpdate(prv);
+								break;
+
+							case 7:
+								System.out.println(
+										"Enter the privilage name, role and table name to associalte together. Comma separated values.");
+								privilageRoleTable = scanner.next();
+								scanner.nextLine();
+								String[] userACcessRole = privilageRoleTable.split(",");
+
+								ResultSet userAccessRs = stmt
+										.executeQuery("SELECT count(*) as counts FROM USER_ACCESS");
+								int userAccessId = 0;
+								while (userAccessRs.next()) {
+									userAccessId = userAccessRs.getInt("counts") + 1;
+								}
+
+								String privName = userACcessRole[0];
+								ResultSet userprivNameRs = stmt
+										.executeQuery("SELECT privilege_id FROM USER_PRIVILEGES where privilege_name ='"
+												+ privName + "'");
+								int privId1 = 0;
+								while (userprivNameRs.next()) {
+									privId1 = userprivNameRs.getInt("privilege_id");
+								}
+
+								String acc = "INSERT INTO USER_ACCESS VALUES (" + userAccessId + ",'" + privId1 + "','"
+										+ userACcessRole[1] + "','" + userACcessRole[2] + "')";
+								System.out.println(acc);
+								stmt.executeUpdate(acc);
+								break;
+							case 8:
+								System.out.println("Enter the User Name whose Role is to be updated");
+								String updateUserName = scanner.next();
+								scanner.nextLine();
+								System.out.println("Enter the New Role to be assigned.");
+								String updateUserRole = scanner.next();
+								scanner.nextLine();
+								stmt.executeUpdate("update user_account set role_name ='" + updateUserRole
+										+ "' where name = '" + updateUserName + "'");
+								break;
+							case 9:
+								System.out.println("Enter the Role Name");
+								String updateRoleName = scanner.next();
+								scanner.nextLine();
+								System.out.println("Enter the privilege Name");
+								String updatePrivName = scanner.next();
+								scanner.nextLine();
+
+								ResultSet privAccess = stmt.executeQuery(
+										"select is_account_privilege, is_relationship_privilege from user_privileges where privilege_name = '"
+												+ updatePrivName + "'");
+								int existingRelationpriv = 0, existingAccountPriv = 0;
+								while (privAccess.next()) {
+									existingRelationpriv = privAccess.getInt("is_relationship_privilege");
+									existingAccountPriv = privAccess.getInt("is_account_privilege");
+									break;
+								}
+								int newprivId = 0;
+								ResultSet newprivRs = stmt
+										.executeQuery("SELECT count(*) as counts FROM USER_PRIVILEGES");
+								while (newprivRs.next()) {
+									newprivId = newprivRs.getInt("counts") + 1;
+								}
+								String newprv = "INSERT INTO USER_PRIVILEGES VALUES (" + newprivId + ",'"
+										+ updatePrivName + "','" + updateRoleName + "'," + existingAccountPriv + ","
+										+ existingRelationpriv + ")";
+								stmt.executeUpdate(newprv);
+								break;
+							default:
+								break;
 							}
-							break;
-
-						case 5:
-							System.out.println("Enter the Role Name for user with user id : " + idNo);
-							userAccountRole = scanner.next();
-							scanner.nextLine();
-
-							String usr = "INSERT INTO USER_ACCOUNT VALUES (" + idNo + ",'" + userAccountRole + "','"
-									+ userName + "'," + phoneNumber + ")";
-							stmt.executeUpdate(usr);
-							break;
-
-						case 6:
-							System.out.println("Enter the account privilege for role : " + newRoleName);
-							privilegeRole = scanner.next();
-							scanner.nextLine();
-							ResultSet privRs = stmt.executeQuery("SELECT count(*) as counts FROM USER_PRIVILEGES");
-							int privId = 0;
-							while (privRs.next()) {
-								privId = privRs.getInt("counts") + 1;
-							}
-							String prv = "INSERT INTO USER_PRIVILEGES VALUES (" + privId + ",'" + privilegeRole + "','"
-									+ newRoleName + "'," + isAccountPriv + "," + isRelationshipPriv + ")";
-							stmt.executeUpdate(prv);
-							break;
-
-						case 7:
-							System.out.println(
-									"Enter the privilage name, role and table name to associalte together. Comma separated values.");
-							privilageRoleTable = scanner.next();
-							scanner.nextLine();
-							String[] userACcessRole = privilageRoleTable.split(",");
-
-							ResultSet userAccessRs = stmt.executeQuery("SELECT count(*) as counts FROM USER_ACCESS");
-							int userAccessId = 0;
-							while (userAccessRs.next()) {
-								userAccessId = userAccessRs.getInt("counts") + 1;
-							}
-
-							String privName = userACcessRole[0];
-							ResultSet userprivNameRs = stmt
-									.executeQuery("SELECT privilege_id FROM USER_PRIVILEGES where privilege_name ='"
-											+ privName + "'");
-							int privId1 = 0;
-							while (userprivNameRs.next()) {
-								privId1 = userprivNameRs.getInt("privilege_id");
-							}
-
-							String acc = "INSERT INTO USER_ACCESS VALUES (" + userAccessId + ",'" + privId1 + "','"
-									+ userACcessRole[1] + "','" + userACcessRole[2] + "')";
-							System.out.println(acc);
-							stmt.executeUpdate(acc);
-							break;
-
-						default:
-							break;
+						} catch (SQLException se) {
+							System.out.println("Error occurred :" + se.getMessage());
 						}
 
 					}
